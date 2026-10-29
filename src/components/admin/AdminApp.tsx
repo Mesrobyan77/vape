@@ -21,6 +21,7 @@ import { SettingsSection } from "./sections/Settings";
 import { UploadsSection } from "./sections/Uploads";
 import { InventorySection } from "./sections/Inventory";
 import { PaymentsSection, AuditSection, SecuritySection } from "./sections/System";
+import { media } from "@/lib/media";
 
 export const ADMIN_SECTIONS = [
   { key: "", label: "Dashboard" },
@@ -85,7 +86,7 @@ function AdminShell({ path, email }: { path: string[]; email: string }) {
     <div className="min-h-screen lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
       <aside className="border-b border-white/10 bg-surface p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <Link href="/admin" className="mb-6 block">
-          <Image src="/media/logo.png" alt="Vape Hub admin" width={170} height={36} />
+          <Image src={media("logo.png")} alt="Vape Hub admin" width={170} height={36} />
         </Link>
         <nav aria-label="Admin">
           <ul className="flex flex-wrap gap-1 lg:flex-col">

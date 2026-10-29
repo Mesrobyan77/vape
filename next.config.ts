@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   reactStrictMode: true,
   images: {
-    // Product art ships from /public/media; admin uploads come from Cloudinary,
+    // Storefront art and admin uploads come from Cloudinary (src/lib/media.ts),
     // editorial photography (when used) from Pexels.
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },

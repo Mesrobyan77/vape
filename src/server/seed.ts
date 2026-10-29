@@ -1,6 +1,7 @@
 import type { Localized } from "@/lib/api/types";
 import { config } from "./config";
 import { connectDb } from "./db";
+import { media } from "@/lib/media";
 import {
   BlogPost,
   Brand,
@@ -47,27 +48,27 @@ const DEVICE_WARNING = l(
 );
 
 export const SEED_CATEGORIES = [
-  { slug: "vapor-tech", name: l("Vapor Tech", "Vapor Tech", "Vapor Tech"), image: img("/media/categories/cat-img-1.png", 236, 332), sortOrder: 1 },
-  { slug: "cloud-max", name: l("Cloud Max", "Cloud Max", "Cloud Max"), image: img("/media/categories/cat-img-2.png", 234, 332), sortOrder: 2 },
-  { slug: "zen-pulse", name: l("Zen Pulse", "Zen Pulse", "Zen Pulse"), image: img("/media/categories/cat-img-3.png", 236, 332), sortOrder: 3 },
-  { slug: "koko-prime", name: l("Koko Prime", "Koko Prime", "Koko Prime"), image: img("/media/categories/cat-img-4.png", 234, 332), sortOrder: 4 },
-  { slug: "nova-vape", name: l("Nova Vape", "Nova Vape", "Nova Vape"), image: img("/media/categories/cat-img-5.png", 236, 332), sortOrder: 5 },
-  { slug: "premium-vapes", name: l("Պրեմիում վեյփեր", "Премиум вейпы", "Premium Vapes"), image: img("/media/categories/category-1.jpg", 704, 360), sortOrder: 6 },
-  { slug: "elite-vapor", name: l("Elite Vapor", "Elite Vapor", "Elite Vapor"), image: img("/media/categories/category-2.jpg", 704, 360), sortOrder: 7 },
+  { slug: "vapor-tech", name: l("Vapor Tech", "Vapor Tech", "Vapor Tech"), image: img(media("categories/cat-img-1.png"), 236, 332), sortOrder: 1 },
+  { slug: "cloud-max", name: l("Cloud Max", "Cloud Max", "Cloud Max"), image: img(media("categories/cat-img-2.png"), 234, 332), sortOrder: 2 },
+  { slug: "zen-pulse", name: l("Zen Pulse", "Zen Pulse", "Zen Pulse"), image: img(media("categories/cat-img-3.png"), 236, 332), sortOrder: 3 },
+  { slug: "koko-prime", name: l("Koko Prime", "Koko Prime", "Koko Prime"), image: img(media("categories/cat-img-4.png"), 234, 332), sortOrder: 4 },
+  { slug: "nova-vape", name: l("Nova Vape", "Nova Vape", "Nova Vape"), image: img(media("categories/cat-img-5.png"), 236, 332), sortOrder: 5 },
+  { slug: "premium-vapes", name: l("Պրեմիում վեյփեր", "Премиум вейпы", "Premium Vapes"), image: img(media("categories/category-1.jpg"), 704, 360), sortOrder: 6 },
+  { slug: "elite-vapor", name: l("Elite Vapor", "Elite Vapor", "Elite Vapor"), image: img(media("categories/category-2.jpg"), 704, 360), sortOrder: 7 },
   { slug: "disposable-vape", name: l("Մեկանգամյա վեյփեր", "Одноразовые вейпы", "Disposable Vapes"), image: null, sortOrder: 8 },
   { slug: "pod-systems", name: l("Փոդ համակարգեր", "Под-системы", "Pod Systems"), image: null, sortOrder: 9 },
   { slug: "coils", name: l("Գոլորշիչներ", "Испарители", "Coils"), image: null, sortOrder: 10 },
-  { slug: "e-juices", name: l("Հեղուկներ", "Жидкости", "E-Juices"), image: img("/media/bg/banner-2-bg.png", 1432, 349), sortOrder: 11 },
+  { slug: "e-juices", name: l("Հեղուկներ", "Жидкости", "E-Juices"), image: img(media("bg/banner-2-bg.png"), 1432, 349), sortOrder: 11 },
 ];
 
 export const SEED_BRANDS = [
-  { slug: "voodoo", name: "Voodoo", logo: img("/media/brands/brand01.png", 247, 96) },
-  { slug: "xmods", name: "XMods", logo: img("/media/brands/brand02.png", 248, 96) },
-  { slug: "uwell", name: "Uwell", logo: img("/media/brands/brand03.png", 248, 96) },
-  { slug: "vaporesso", name: "Vaporesso", logo: img("/media/brands/brand04.png", 248, 96) },
-  { slug: "geekvape", name: "Geekvape", logo: img("/media/brands/brand05.png", 248, 96) },
-  { slug: "vopo", name: "Vopo", logo: img("/media/brands/brand06.png", 248, 96) },
-  { slug: "smok", name: "Smok", logo: img("/media/brands/brand07.png", 247, 96) },
+  { slug: "voodoo", name: "Voodoo", logo: img(media("brands/brand01.png"), 247, 96) },
+  { slug: "xmods", name: "XMods", logo: img(media("brands/brand02.png"), 248, 96) },
+  { slug: "uwell", name: "Uwell", logo: img(media("brands/brand03.png"), 248, 96) },
+  { slug: "vaporesso", name: "Vaporesso", logo: img(media("brands/brand04.png"), 248, 96) },
+  { slug: "geekvape", name: "Geekvape", logo: img(media("brands/brand05.png"), 248, 96) },
+  { slug: "vopo", name: "Vopo", logo: img(media("brands/brand06.png"), 248, 96) },
+  { slug: "smok", name: "Smok", logo: img(media("brands/brand07.png"), 247, 96) },
 ];
 
 interface SeedVariant {
@@ -104,7 +105,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Ignition",
     category: "vapor-tech",
     brand: "vaporesso",
-    image: "/media/products/p-01.png",
+    image: media("products/p-01.png"),
     featured: true,
     kind: "device",
     feature: l("կոմպակտ մոդ՝ կարգավորվող օդահոսքով և USB-C լիցքավորմամբ", "компактный мод с регулируемой затяжкой и зарядкой USB-C", "a compact mod with adjustable airflow and USB-C charging"),
@@ -120,7 +121,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Aero Core",
     category: "pod-systems",
     brand: "uwell",
-    image: "/media/products/p-02.png",
+    image: media("products/p-02.png"),
     featured: true,
     kind: "device",
     feature: l("թեթև փոդ համակարգ՝ փոխարինվող քարթրիջներով", "лёгкая под-система со сменными картриджами", "a lightweight pod system with refillable cartridges"),
@@ -133,7 +134,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Vape Edge",
     category: "premium-vapes",
     brand: "vopo",
-    image: "/media/products/p-03.png",
+    image: media("products/p-03.png"),
     gallery: true,
     featured: true,
     kind: "device",
@@ -150,7 +151,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Vaporize",
     category: "cloud-max",
     brand: "smok",
-    image: "/media/products/p-04.png",
+    image: media("products/p-04.png"),
     featured: true,
     kind: "device",
     feature: l("հզոր բոքս-մոդ՝ երկու մարտկոցով", "мощный бокс-мод на двух аккумуляторах", "a powerful dual-battery box mod"),
@@ -163,7 +164,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "AeroPulse",
     category: "zen-pulse",
     brand: "geekvape",
-    image: "/media/products/p-05.png",
+    image: media("products/p-05.png"),
     featured: true,
     kind: "device",
     feature: l("ամուր սարք՝ ջրի և հարվածների դեմ պաշտպանությամբ", "прочное устройство с защитой от воды и ударов", "a rugged device with water and shock resistance"),
@@ -176,7 +177,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "NovaFume",
     category: "nova-vape",
     brand: "voodoo",
-    image: "/media/products/p-06.png",
+    image: media("products/p-06.png"),
     featured: false,
     kind: "device",
     feature: l("դասական մոդ՝ ձեռքով կարգավորումներով", "классический мод с ручными настройками", "a classic mod with manual settings"),
@@ -189,7 +190,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Vaporize Mini",
     category: "disposable-vape",
     brand: "smok",
-    image: "/media/products/p-07.png",
+    image: media("products/p-07.png"),
     featured: true,
     kind: "liquid",
     feature: l("մեկանգամյա սարք՝ պատրաստ օգտագործման", "одноразовое устройство, готовое к использованию", "a ready-to-use disposable device"),
@@ -206,7 +207,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "NebulaXt",
     category: "elite-vapor",
     brand: "xmods",
-    image: "/media/products/p-08.png",
+    image: media("products/p-08.png"),
     featured: true,
     kind: "device",
     feature: l("ժամանակակից մոդ՝ ճշգրիտ ջերմաստիճանի կառավարմամբ", "современный мод с точным контролем температуры", "a modern mod with precise temperature control"),
@@ -219,7 +220,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "TitanVape",
     category: "pod-systems",
     brand: "geekvape",
-    image: "/media/products/p-03.png",
+    image: media("products/p-03.png"),
     featured: false,
     kind: "device",
     feature: l("սահմանափակ թողարկման փոդ համակարգ", "под-система ограниченной серии", "a limited-edition pod system"),
@@ -232,7 +233,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Double Apple",
     category: "e-juices",
     brand: "voodoo",
-    image: "/media/products/pf-01.png",
+    image: media("products/pf-01.png"),
     featured: false,
     kind: "liquid",
     feature: l("կանաչ և կարմիր խնձորի համով հեղուկ", "жидкость со вкусом зелёного и красного яблока", "an e-liquid with a green and red apple flavour"),
@@ -250,7 +251,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Dual Aroma",
     category: "e-juices",
     brand: "vopo",
-    image: "/media/products/pf-02.png",
+    image: media("products/pf-02.png"),
     featured: false,
     kind: "liquid",
     feature: l("անանուխի և հատապտուղների համադրություն", "сочетание мяты и ягод", "a blend of mint and berries"),
@@ -266,7 +267,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Twin Fruit",
     category: "e-juices",
     brand: "voodoo",
-    image: "/media/products/pf-03.png",
+    image: media("products/pf-03.png"),
     featured: false,
     kind: "liquid",
     feature: l("արևադարձային մրգերի համով հեղուկ", "жидкость со вкусом тропических фруктов", "an e-liquid with a tropical fruit flavour"),
@@ -282,7 +283,7 @@ export const SEED_PRODUCTS: SeedProduct[] = [
     name: "Pair Vapor",
     category: "e-juices",
     brand: "vopo",
-    image: "/media/products/pf-04.png",
+    image: media("products/pf-04.png"),
     featured: false,
     kind: "liquid",
     feature: l("կոլայի և սառույցի համով աղային հեղուկ", "солевая жидкость со вкусом колы со льдом", "a salt e-liquid with a cola ice flavour"),
@@ -307,12 +308,12 @@ function productTexts(p: SeedProduct): { short: Localized; description: Localize
   };
 }
 
-const GALLERY = [img("/media/products/pd-1.png", 704, 593), img("/media/products/pd-2.png", 704, 593), img("/media/products/pd-3.png", 704, 593), img("/media/products/pd-4.png", 704, 593)];
+const GALLERY = [img(media("products/pd-1.png"), 704, 593), img(media("products/pd-2.png"), 704, 593), img(media("products/pd-3.png"), 704, 593), img(media("products/pd-4.png"), 704, 593)];
 
 const BLOG = [
   {
     slug: "how-to-choose-your-first-pod-system",
-    image: "/media/blogs/blog-01.jpg",
+    image: media("blogs/blog-01.jpg"),
     category: "guides",
     title: l("Ինչպես ընտրել առաջին փոդ համակարգը", "Как выбрать первую под-систему", "How to choose your first pod system"),
     excerpt: l("Հիմնական չափանիշներ՝ մարտկոց, քարթրիջ և լիցքավորում։", "Основные критерии: аккумулятор, картридж и зарядка.", "The basics to compare: battery, cartridge and charging."),
@@ -324,7 +325,7 @@ const BLOG = [
   },
   {
     slug: "understanding-nicotine-strengths",
-    image: "/media/blogs/blog-02.jpg",
+    image: media("blogs/blog-02.jpg"),
     category: "guides",
     title: l("Ինչ են նշանակում նիկոտինի խտության պիտակները", "Что означают обозначения крепости никотина", "Understanding nicotine strength labels"),
     excerpt: l("mg/ml, աղային նիկոտին և ինչպես կարդալ պիտակը։", "mg/ml, солевой никотин и как читать этикетку.", "mg/ml, salt nicotine and how to read a label."),
@@ -336,7 +337,7 @@ const BLOG = [
   },
   {
     slug: "caring-for-your-device",
-    image: "/media/blogs/blog-03.jpg",
+    image: media("blogs/blog-03.jpg"),
     category: "maintenance",
     title: l("Սարքի և գոլորշիչների խնամք", "Уход за устройством и испарителями", "Caring for your device and coils"),
     excerpt: l("Պարզ սովորություններ՝ սարքի կյանքը երկարացնելու համար։", "Простые привычки, которые продлят жизнь устройства.", "Simple habits that keep your device working longer."),
@@ -348,7 +349,7 @@ const BLOG = [
   },
   {
     slug: "e-liquid-storage-tips",
-    image: "/media/blogs/blog-04.jpg",
+    image: media("blogs/blog-04.jpg"),
     category: "maintenance",
     title: l("Ինչպես ճիշտ պահել հեղուկները", "Как правильно хранить жидкости", "Storing e-liquids safely"),
     excerpt: l("Զով, մութ և երեխաներից հեռու։", "Прохладно, темно и недоступно для детей.", "Cool, dark and out of reach of children."),
@@ -360,7 +361,7 @@ const BLOG = [
   },
   {
     slug: "travel-notes-for-vapers",
-    image: "/media/blogs/blog-05.jpg",
+    image: media("blogs/blog-05.jpg"),
     category: "news",
     title: l("Ճամփորդություն վեյփով․ գործնական նշումներ", "Путешествие с вейпом: практические заметки", "Travelling with a vape: practical notes"),
     excerpt: l("Մարտկոցներ, ձեռքի ուղեբեռ և տեղական կանոններ։", "Аккумуляторы, ручная кладь и местные правила.", "Batteries, carry-on luggage and local rules."),
@@ -372,7 +373,7 @@ const BLOG = [
   },
   {
     slug: "vape-hub-opens-in-yerevan",
-    image: "/media/blogs/blog-06.jpg",
+    image: media("blogs/blog-06.jpg"),
     category: "news",
     title: l("Vape Hub-ը բացվում է Երևանում", "Vape Hub открывается в Ереване", "Vape Hub opens in Yerevan"),
     excerpt: l("Առցանց խանութ՝ առաքմամբ ամբողջ Հայաստանում։", "Онлайн-магазин с доставкой по всей Армении.", "An online store delivering across Armenia."),
@@ -506,7 +507,7 @@ export async function seedDatabase(opts: { reset?: boolean } = {}): Promise<{ pr
       {
         title: l("Ստացեք լավագույն փորձառությունը", "Получите лучший опыт", "Get the best vaping experience"),
         subtitle: l("", "", ""),
-        image: img("/media/bg/banner-1-bg.png", 1432, 500),
+        image: img(media("bg/banner-1-bg.png"), 1432, 500),
         link: "/shop",
         placement: "promo",
         active: true,
@@ -515,7 +516,7 @@ export async function seedDatabase(opts: { reset?: boolean } = {}): Promise<{ pr
       {
         title: l("Բացահայտեք հեղուկները", "Откройте для себя жидкости", "Explore E-Juices"),
         subtitle: l("", "", ""),
-        image: img("/media/bg/banner-2-bg.png", 1432, 349),
+        image: img(media("bg/banner-2-bg.png"), 1432, 349),
         link: "/shop?category=e-juices",
         placement: "promo",
         active: true,

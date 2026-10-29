@@ -10,6 +10,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useUi } from "@/components/providers/UiState";
 import { useSettings } from "@/components/providers/SettingsProvider";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { media } from "@/lib/media";
 
 export function MobileNav() {
   const { panel, close } = useUi();
@@ -72,7 +73,7 @@ function Panel({ onClose }: { onClose: () => void }) {
       </button>
       <div className="mb-10 flex">
         <Link href="/" aria-label="Vape Hub — home">
-          <Image src="/media/logo.png" alt="Vape Hub" width={190} height={40} />
+          <Image src={media("logo.png")} alt="Vape Hub" width={190} height={40} />
         </Link>
       </div>
       <ul className="mobile-nav__list">

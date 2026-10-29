@@ -75,7 +75,7 @@ describe("outbox", () => {
 describe("upload validation", () => {
   it("accepts real images by magic bytes and rejects spoofed files", async () => {
     const { validateImage } = await import("@/server/services/media");
-    const png = readFileSync(path.resolve(__dirname, "../../public/media/logo.png"));
+    const png = readFileSync(path.resolve(__dirname, "../fixtures/logo.png"));
     await expect(validateImage(png)).resolves.toMatchObject({ mime: "image/png", width: 229, height: 48 });
     const spoof = Buffer.concat([Buffer.from("<?php echo 'x'; ?>"), Buffer.alloc(100)]);
     await expect(validateImage(spoof)).rejects.toMatchObject({ code: "UNSUPPORTED_MEDIA_TYPE" });

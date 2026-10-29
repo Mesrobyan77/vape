@@ -10,6 +10,7 @@ import { useOutsideClick } from "@/hooks/use-dialog";
 import { useUi } from "@/components/providers/UiState";
 import { CartIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { media } from "@/lib/media";
 
 const SHOP_LINKS = [
   { href: "/shop", key: "shopGrid" },
@@ -37,7 +38,7 @@ export function Header() {
         <div className="main-menu__block">
           <div className="main-menu__logo">
             <Link href="/" aria-label="Vape Hub — home">
-              <Image src="/media/logo.png" alt="Vape Hub" width={229} height={48} priority />
+              <Image src={media("logo.png")} alt="Vape Hub" width={229} height={48} priority />
             </Link>
           </div>
 

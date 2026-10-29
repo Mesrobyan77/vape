@@ -68,7 +68,7 @@
     font-family: var(--font-body);
     color: var(--color-gray);
     background-color: var(--color-black);
-    background-image: url("/media/bg/body-bg.jpg");
+    background-image: url("https://res.cloudinary.com/dzywgnadv/image/upload/vapehub/media/bg/body-bg.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -1224,7 +1224,7 @@
 
   .banner-1 {
     position: relative;
-    background: url("/media/bg/banner-1-bg.png") no-repeat center / cover;
+    background: url("https://res.cloudinary.com/dzywgnadv/image/upload/vapehub/media/bg/banner-1-bg.png") no-repeat center / cover;
     min-height: clamp(370px, 26.042vw, 600px);
     display: grid;
     align-content: center;
@@ -1274,7 +1274,7 @@
   }
 
   .page-header {
-    background: url("/media/bg/page-title-bg.jpg") no-repeat center / cover;
+    background: url("https://res.cloudinary.com/dzywgnadv/image/upload/vapehub/media/bg/page-title-bg.jpg") no-repeat center / cover;
   }
   .page-header__content {
     min-height: clamp(170px, 16.92vw, 400px);

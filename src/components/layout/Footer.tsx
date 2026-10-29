@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { PublicSettings } from "@/lib/api/types";
 import { FacebookIcon, InstagramIcon, XLogoIcon } from "@/components/icons";
+import { media } from "@/lib/media";
 
 const SOCIAL = [
   { key: "Instagram", url: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM, Icon: InstagramIcon },
@@ -35,7 +36,7 @@ export async function Footer({ settings }: { settings: PublicSettings | null }) 
         <div className="grid gap-x-6 gap-y-12 pb-80 sm:grid-cols-12 lg:gap-y-6">
           <div className="text-center sm:col-span-12 lg:col-span-3 lg:text-left">
             <Link href="/" className="mb-16 inline-block" aria-label="Vape Hub — home">
-              <Image src="/media/logo.png" alt="Vape Hub" width={229} height={48} />
+              <Image src={media("logo.png")} alt="Vape Hub" width={229} height={48} />
             </Link>
             <p className="mb-24">{t("tagline")}</p>
             {SOCIAL.length ? (
@@ -122,10 +123,10 @@ export async function Footer({ settings }: { settings: PublicSettings | null }) 
                     <span>ArCa</span>
                   </PaymentTile>
                   <li>
-                    <Image src="/media/icons/payment-01.png" alt="Visa" width={81} height={56} />
+                    <Image src={media("icons/payment-01.png")} alt="Visa" width={81} height={56} />
                   </li>
                   <li>
-                    <Image src="/media/icons/payment-03.png" alt="Mastercard" width={81} height={56} />
+                    <Image src={media("icons/payment-03.png")} alt="Mastercard" width={81} height={56} />
                   </li>
                 </>
               ) : null}

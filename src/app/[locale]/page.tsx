@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/ui/States";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
 import { NewsletterForm } from "@/components/home/NewsletterForm";
 import { BlogCard } from "@/components/blog/BlogCard";
+import { media } from "@/lib/media";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -59,7 +60,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
             </div>
             <div className="mx-auto w-full sm:w-10/12 md:w-8/12 lg:w-full">
               <Image
-                src="/media/banner/hero-image.png"
+                src={media("banner/hero-image.png")}
                 alt={t("heroImageAlt")}
                 width={704}
                 height={572}
@@ -79,10 +80,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
             <div className="mx-auto grid w-full items-center gap-6 px-4 md:w-11/12 md:grid-cols-3 2xl:w-10/12">
               <h2 className="text-white">{t("bannerTitle")}</h2>
               <div className="banner-1__object text-center">
-                <Image src="/media/banner/banner-object.png" alt="" width={218} height={282} className="mx-auto h-auto w-[45%] md:w-auto" />
+                <Image src={media("banner/banner-object.png")} alt="" width={218} height={282} className="mx-auto h-auto w-[45%] md:w-auto" />
               </div>
               <div className="banner-1__logo mx-auto w-2/5 text-center md:mx-0 md:w-auto md:text-end">
-                <Image src="/media/banner/banner-logo.png" alt="" width={340} height={195} className="ml-auto inline-block h-auto" />
+                <Image src={media("banner/banner-logo.png")} alt="" width={340} height={195} className="ml-auto inline-block h-auto" />
               </div>
             </div>
           </div>
@@ -114,7 +115,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
         <div className="container-vh">
           <Link href={promo?.link ?? "/shop?category=e-juices"} className="banner-2">
             <SafeImage
-              image={promo?.image ?? { url: "/media/bg/banner-2-bg.png", alt: "", width: 1432, height: 349 }}
+              image={promo?.image ?? { url: media("bg/banner-2-bg.png"), alt: "", width: 1432, height: 349 }}
               width={1432}
               height={349}
               fit="cover"

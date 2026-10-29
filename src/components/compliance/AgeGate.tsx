@@ -8,6 +8,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useErrorMessage } from "@/hooks/use-error-message";
 import { FormAlert } from "@/components/ui/States";
 import { AGE_COOKIE, AGE_REQUIRED_EVENT } from "@/lib/compliance";
+import { media } from "@/lib/media";
 
 function writeAgeCookie(on: boolean) {
   const secure = window.location.protocol === "https:" ? "; Secure" : "";
@@ -74,7 +75,7 @@ export function AgeGate({ initiallyConfirmed }: { initiallyConfirmed: boolean })
         className="w-full max-w-[560px] rounded-[10px] border border-primary/60 bg-surface p-6 text-center sm:p-10"
         data-testid="age-gate"
       >
-        <Image src="/media/logo.png" alt="Vape Hub" width={190} height={40} className="mx-auto mb-24" />
+        <Image src={media("logo.png")} alt="Vape Hub" width={190} height={40} className="mx-auto mb-24" />
         {denied ? (
           <>
             <h2 id="age-gate-title" className="h4 mb-16 text-white">

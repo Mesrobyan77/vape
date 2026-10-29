@@ -8,12 +8,13 @@ import { api, isApiError, setCsrfToken } from "@/lib/api/client";
 import type { LoginResponse, MfaSetupResponse } from "@/lib/api/types";
 import { ME_KEY } from "@/hooks/use-me";
 import { adminErrorText, TextInput } from "./ui";
+import { media } from "@/lib/media";
 
 function AuthCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="grid min-h-screen place-items-center p-4">
       <div className="surface w-full max-w-[460px] rounded-[10px] p-6 sm:p-8">
-        <Image src="/media/logo.png" alt="Vape Hub" width={190} height={40} className="mx-auto mb-24" />
+        <Image src={media("logo.png")} alt="Vape Hub" width={190} height={40} className="mx-auto mb-24" />
         <h1 className="h5 mb-24 text-center text-white">{title}</h1>
         {children}
       </div>

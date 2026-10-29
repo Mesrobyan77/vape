@@ -8,6 +8,7 @@ import { alternatesFor } from "@/lib/site";
 import { getPublicSettings, listBrands } from "@/server/storefront";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { BrandMarquee } from "@/components/home/BrandMarquee";
+import { media } from "@/lib/media";
 
 type Props = { params: Promise<{ locale: Locale }> };
 
@@ -40,7 +41,7 @@ export default async function AboutPage({ params }: Props) {
               <p className="mb-16">{t("body")}</p>
               <p>{t("body2")}</p>
             </div>
-            <Image src="/media/about/about.jpg" alt={t("imageAlt")} width={1128} height={801} sizes="(min-width: 768px) 37vw, 100vw" className="h-auto w-full" />
+            <Image src={media("about/about.jpg")} alt={t("imageAlt")} width={1128} height={801} sizes="(min-width: 768px) 37vw, 100vw" className="h-auto w-full" />
           </div>
         </div>
       </section>

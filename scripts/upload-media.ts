@@ -1,7 +1,7 @@
 /**
- * npm run media:upload
- * Uploads every file under public/media to Cloudinary as `vapehub/media/<path>` (same paths the
- * storefront asks for via `mediaUrl()`). Existing assets are kept, so re-running is cheap.
+ * npm run media:upload [dir]   (default: public/media)
+ * Uploads every file under the folder to Cloudinary as `vapehub/media/<path>` (the URLs the
+ * storefront builds with `media()` in src/lib/media.ts). Existing assets are kept, so re-running is cheap.
  * Reads CLOUDINARY_* from the environment, or from .env.local / .env when present.
  */
 import { existsSync, readdirSync, statSync } from "node:fs";
@@ -10,7 +10,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 for (const file of [".env.local", ".env"]) if (existsSync(file)) process.loadEnvFile(file);
 
-const ROOT = path.resolve("public/media");
+const ROOT = path.resolve(process.argv[2] ?? "public/media");
 const FOLDER = "vapehub/media";
 
 function walk(dir: string): string[] {

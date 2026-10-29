@@ -379,7 +379,7 @@ export function ImagesEditor({ label, images, onChange, max = 12 }: { label: str
             {uploading ? "Uploading…" : "Upload image"}
           </label>
           <div className="flex flex-wrap items-end gap-2">
-            <input type="text" className="field !h-9 w-60 text-sm" placeholder="/media/products/p-01.png" aria-label="Image URL" value={url} onChange={(e) => setUrl(e.target.value)} />
+            <input type="text" className="field !h-9 w-60 text-sm" placeholder="https://res.cloudinary.com/…/p-01.png" aria-label="Image URL" value={url} onChange={(e) => setUrl(e.target.value)} />
             <input type="number" className="field !h-9 w-20 text-sm" aria-label="Width" value={dims.width} onChange={(e) => setDims({ ...dims, width: e.target.value })} />
             <input type="number" className="field !h-9 w-20 text-sm" aria-label="Height" value={dims.height} onChange={(e) => setDims({ ...dims, height: e.target.value })} />
             <button type="button" className="cus-btn is-sm" onClick={addUrl}>
