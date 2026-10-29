@@ -71,7 +71,7 @@ jobs:
           E2E_TEST_API_TOKEN: e2e-ci-token
           PAYMENT_MODE: mock
           DEV_MEMORY_MODE: start
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
