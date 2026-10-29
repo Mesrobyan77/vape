@@ -1,0 +1,32 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/.next-e2e/
+/.data/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# testing
+/coverage
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+/e2e/.auth/
+
+# env files — real values never committed
+.env
+.env.*
+!.env.example
+
+# superseded two-folder layout (safe to delete)
+/vape-hub/
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
