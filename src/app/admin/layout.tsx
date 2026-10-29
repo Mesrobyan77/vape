@@ -18,8 +18,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const { user } = await getAuthContext();
   if (user && user.role !== "admin") notFound();
   return (
-    <html lang="en" className={fontVariables}>
-      <body>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <NextIntlClientProvider locale="en" messages={en} timeZone="Asia/Yerevan">
           <AppProviders>{children}</AppProviders>
         </NextIntlClientProvider>

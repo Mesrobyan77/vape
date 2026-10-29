@@ -47,6 +47,13 @@ Put the app behind HTTPS (HSTS is sent in production). `TRUST_PROXY_HEADERS=true
 
 ## Admin bootstrap
 
+For a development database, put `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the ignored `.env.local` file before
+running `npm run seed:dev`. The seed resets the target database, then creates that admin; the password must
+be at least 14 characters and meet the password policy. Sign in at `/admin` to enrol TOTP. This seed command
+refuses production and must not be used to bootstrap a production account.
+
+For production, create the first administrator explicitly:
+
 ```
 ADMIN_PASSWORD='…' npm run admin:create -- --email owner@example.am --name "Store Owner"
 ```
