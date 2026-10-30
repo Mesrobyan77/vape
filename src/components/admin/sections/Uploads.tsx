@@ -1,19 +1,21 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Check, Copy, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { api } from "@/lib/api/client";
 import type { AdminImage, MediaRow } from "@/lib/api/types";
 import { useToast } from "@/components/providers/Toaster";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { AdminTable, adminErrorText, ImagesEditor, PageTitle, Panel, useAdminList } from "../ui";
+import { AdminConfirm } from "../dialogs";
+import { adminErrorText, Button, ImagesEditor, PageTitle, Pager, Panel, useAdminList } from "../ui";
 import { formatDateTime } from "./shared";
 
 export function UploadsSection() {
   const client = useQueryClient();
   const toast = useToast();
   const [page, setPage] = useState(1);
-  const [pending, setPending] = useState<AdminImage[]>([]);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [justUploaded, setJustUploaded] = useState<AdminImage[]>([]);
   const [deleting, setDeleting] = useState<MediaRow | null>(null);
   const list = useAdminList<MediaRow>("/admin/uploads", { page, pageSize: 24 }, "uploads");
 
@@ -30,67 +32,87 @@ export function UploadsSection() {
     },
   });
 
+  const copy = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(url);
+      toast.info("URL copied.");
+      window.setTimeout(() => setCopied((c) => (c === url ? null : c)), 2000);
+    } catch {
+      toast.error("Your browser blocked clipboard access — copy it from the field instead.");
+    }
+  };
+
+  const rows = (list.data?.data ?? []) as MediaRow[];
+
   return (
     <>
-      <PageTitle>Uploads</PageTitle>
-      <div className="space-y-6">
-        <Panel title="Upload">
+      <PageTitle description="Images stored in Cloudinary. Uploading saves immediately — there is no separate publish step.">Uploads</PageTitle>
+      <div className="adm-stack">
+        <Panel title="Upload an image" subtitle="Files are validated by content and dimensions on the server">
           <ImagesEditor
             label="New uploads"
-            images={pending}
+            images={justUploaded}
             onChange={(imgs) => {
-              setPending(imgs);
+              setJustUploaded(imgs);
               void client.invalidateQueries({ queryKey: ["admin", "uploads"] });
             }}
           />
-          <p className="mt-2 text-xs">
-            Files are validated by content (magic bytes) and dimensions on the server, then stored in Cloudinary. If Cloudinary is not configured the server
-            responds “Uploads are not configured”.
+          <p className="adm-hint">
+            If Cloudinary is not configured the server responds “Uploads are not configured”. Use the “Add by URL” field to reference an existing /media path
+            without uploading a new file.
           </p>
         </Panel>
-        <Panel title="Media library">
-          <AdminTable
-            query={list}
-            rowKey={(m) => m.id}
-            empty="No uploaded media."
-            onPage={setPage}
-            columns={[
-              {
-                header: "Preview",
-                // eslint-disable-next-line @next/next/no-img-element -- Cloudinary thumbnail
-                cell: (m) => <img src={m.url} alt="" className="h-14 w-14 object-contain" />,
-              },
-              { header: "Public id", cell: (m) => <span className="break-all font-mono text-xs">{m.publicId}</span> },
-              { header: "Size", cell: (m) => `${m.width}×${m.height} · ${(m.bytes / 1024).toFixed(0)} KB` },
-              { header: "Uploaded", cell: (m) => formatDateTime(m.createdAt) },
-              {
-                header: "",
-                cell: (m) => (
-                  <span className="flex gap-3">
+
+        <Panel title="Media library" subtitle={list.data ? `${list.data.meta.total} stored images` : undefined} flush>
+          {list.isPending ? (
+            <div className="adm-tiles p-5" aria-busy="true">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div key={i} className="adm-skeleton aspect-square" />
+              ))}
+            </div>
+          ) : rows.length === 0 ? (
+            <p className="adm-hint p-5">No uploaded media yet. Images you add here appear in product, category and banner pickers.</p>
+          ) : (
+            <ul className="adm-tiles p-5">
+              {rows.map((m) => (
+                <li className="adm-tile" key={m.id}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Cloudinary thumbnail */}
+                  <img src={m.url} alt="" loading="lazy" />
+                  <span className="adm-cell-sub" style={{ lineHeight: 1.35 }}>
+                    {m.width}×{m.height} · {(m.bytes / 1024).toFixed(0)} KB
+                    <br />
+                    {formatDateTime(m.createdAt)}
+                  </span>
+                  <span className="adm-tile-row">
+                    <Button size="sm" variant="quiet" onClick={() => void copy(m.url)} aria-label={`Copy URL for ${m.publicId}`}>
+                      {copied === m.url ? <Check aria-hidden /> : <Copy aria-hidden />}
+                      {copied === m.url ? "Copied" : "Copy"}
+                    </Button>
                     <button
                       type="button"
-                      className="text-link"
-                      onClick={() => {
-                        void navigator.clipboard?.writeText(m.url);
-                        toast.info("URL copied.");
-                      }}
+                      className="adm-iconbtn"
+                      style={{ marginLeft: "auto" }}
+                      onClick={() => setDeleting(m)}
+                      aria-label={`Delete ${m.publicId}`}
+                      data-testid={`delete-${m.id}`}
                     >
-                      Copy URL
-                    </button>
-                    <button type="button" className="text-link !text-danger" onClick={() => setDeleting(m)}>
-                      Delete
+                      <Trash2 aria-hidden />
                     </button>
                   </span>
-                ),
-              },
-            ]}
-          />
+                </li>
+              ))}
+            </ul>
+          )}
+          <Pager meta={list.data?.meta ?? null} onPage={setPage} busy={list.isFetching} />
         </Panel>
       </div>
-      <ConfirmDialog
+
+      <AdminConfirm
         open={deleting !== null}
         title="Delete this image?"
-        body={<p>Make sure no product, category or banner still uses it.</p>}
+        body={<p className="adm-hint">Make sure no product, category or banner still uses it — the storefront will show a broken image otherwise.</p>}
+        confirmLabel="Delete image"
         pending={remove.isPending}
         onCancel={() => setDeleting(null)}
         onConfirm={() => deleting && remove.mutate(deleting)}

@@ -49,6 +49,7 @@
     "node_modules",
     "playwright-report",
     "test-results",
+    "artifacts",
     "vape-hub"
   ]
 }

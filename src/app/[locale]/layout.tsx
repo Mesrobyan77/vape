@@ -61,7 +61,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
 
   return (
     <html lang={locale} data-scroll-behavior="smooth" className={fontVariables} suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <NextIntlClientProvider>
           <AppProviders>
             <SettingsProvider settings={publicSettings}>

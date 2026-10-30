@@ -30,3 +30,6 @@ next-env.d.ts
 *.pem
 npm-debug.log*
 .vercel
+
+# admin redesign QA harness + screenshots (regenerable, see docs/audits/admin-panel-redesign-report.md)
+/artifacts/

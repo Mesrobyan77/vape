@@ -1,4 +1,5 @@
 import "../globals.css";
+import "./admin.css";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
@@ -19,7 +20,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (user && user.role !== "admin") notFound();
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <body className="admin-root" suppressHydrationWarning>
         <NextIntlClientProvider locale="en" messages={en} timeZone="Asia/Yerevan">
           <AppProviders>{children}</AppProviders>
         </NextIntlClientProvider>

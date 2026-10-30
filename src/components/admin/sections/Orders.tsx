@@ -2,78 +2,133 @@
 
 import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { ArrowLeft, Clock, Mail, MapPin, Phone, ShieldAlert } from "lucide-react";
+import { useMemo, useState } from "react";
 import { api } from "@/lib/api/client";
 import type { AdminOrderDetail, AdminOrderRow, OrderStatus } from "@/lib/api/types";
 import { ORDER_STATUSES } from "@/lib/api/types";
 import { formatAmd } from "@/lib/money";
 import { useToast } from "@/components/providers/Toaster";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { AdminError, AdminTable, adminErrorText, PageTitle, Panel, SelectInput, TextInput, useAdminGet, useAdminList } from "../ui";
-import { formatDateTime, OrderStatusPill } from "./shared";
+import { AdminConfirm } from "../dialogs";
+import {
+  AdminError,
+  AdminTable,
+  adminErrorText,
+  Button,
+  PageTitle,
+  Panel,
+  SearchField,
+  SelectInput,
+  StatusPill,
+  TextInput,
+  Toolbar,
+  useAdminGet,
+  useAdminList,
+  useUrlListState,
+  type Column,
+  type PillTone,
+} from "../ui";
+import { formatDateTime, orderStatusLabel, OrderStatusPill } from "./shared";
 
 export function OrdersSection({ id }: { id?: string }) {
   return id ? <OrderDetail id={id} /> : <OrdersList />;
 }
 
+const PAYMENT_TONE: Record<string, PillTone> = {
+  paid: "success",
+  captured: "success",
+  succeeded: "success",
+  pending: "warning",
+  requires_action: "warning",
+  failed: "danger",
+  refunded: "info",
+  created: "neutral",
+  cancelled: "neutral",
+  expired: "neutral",
+};
+
 function OrdersList() {
-  const [page, setPage] = useState(1);
-  const [status, setStatus] = useState("");
-  const [q, setQ] = useState("");
-  const [search, setSearch] = useState("");
-  const list = useAdminList<AdminOrderRow>("/admin/orders", { page, pageSize: 20, status: status || undefined, q: search || undefined }, "orders");
+  const defaults = useMemo(() => ({ page: 1, status: "", q: "" }), []);
+  const { state, update, reset, isFiltered } = useUrlListState(defaults);
+  const list = useAdminList<AdminOrderRow>("/admin/orders", { page: state.page, pageSize: 20, status: state.status || undefined, q: state.q || undefined }, "orders");
+
+  const columns: Column<AdminOrderRow>[] = [
+    {
+      header: "Order",
+      cell: (o) => (
+        <>
+          <Link href={`/admin/orders/${o.id}`} className="adm-cell-title adm-mono">
+            {o.number}
+          </Link>
+          {o.reconciliationRequired ? (
+            <span className="adm-cell-sub">
+              <StatusPill tone="danger">needs reconciliation</StatusPill>
+            </span>
+          ) : null}
+        </>
+      ),
+    },
+    { header: "Placed", cell: (o) => formatDateTime(o.createdAt), hideBelow: "md" },
+    {
+      header: "Customer",
+      cell: (o) => (
+        <>
+          <span className="adm-cell-strong">{o.customerName}</span>
+          <span className="adm-cell-sub">{o.customerEmail}</span>
+        </>
+      ),
+      hideBelow: "sm",
+    },
+    { header: "Status", cell: (o) => <OrderStatusPill status={o.status} /> },
+    {
+      header: "Payment",
+      cell: (o) => (
+        <span className="adm-rowactions">
+          <StatusPill tone="neutral" dot={false}>
+            {o.paymentMethod}
+          </StatusPill>
+          <StatusPill tone={PAYMENT_TONE[o.paymentStatus] ?? "neutral"}>{o.paymentStatus.replace(/_/g, " ")}</StatusPill>
+        </span>
+      ),
+      hideBelow: "lg",
+    },
+    { header: "Total", cell: (o) => <span className="adm-money adm-cell-strong">{formatAmd(o.total)}</span>, align: "num" },
+  ];
+
   return (
     <>
-      <PageTitle>Orders</PageTitle>
-      <Panel>
-        <form
-          className="mb-16 flex flex-wrap items-end gap-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setPage(1);
-            setSearch(q.trim());
-          }}
-        >
-          <div className="w-64">
-            <TextInput label="Search (number, email, name)" value={q} onChange={setQ} />
-          </div>
-          <div className="w-52">
-            <SelectInput
-              label="Status"
-              value={status}
-              onChange={(v) => {
-                setPage(1);
-                setStatus(v);
-              }}
-              options={[{ value: "", label: "All" }, ...ORDER_STATUSES.map((s) => ({ value: s, label: s.replace(/_/g, " ") }))]}
-            />
-          </div>
-          <button type="submit" className="cus-btn is-sm">
-            Search
-          </button>
-        </form>
+      <PageTitle description="Every order placed through the storefront, newest first.">Orders</PageTitle>
+      <Panel flush>
+        <Toolbar>
+          <SearchField label="Search orders" value={state.q} placeholder="Number, email or surname" testId="orders-search" onSubmit={(q) => update({ q, page: 1 })} />
+          <SelectInput
+            label="Status"
+            className="md:w-56"
+            value={state.status}
+            onChange={(status) => update({ status, page: 1 })}
+            testId="orders-status"
+            options={[
+              { value: "", label: "All orders" },
+              { value: "reconciliation", label: "Needs reconciliation" },
+              ...ORDER_STATUSES.map((s) => ({ value: s, label: orderStatusLabel(s) })),
+            ]}
+          />
+          {isFiltered ? (
+            <Button variant="quiet" onClick={reset} data-testid="orders-clear">
+              Clear filters
+            </Button>
+          ) : null}
+        </Toolbar>
         <AdminTable
           testId="admin-orders"
           query={list}
           rowKey={(o) => o.id}
-          empty="No orders found."
-          onPage={setPage}
-          columns={[
-            {
-              header: "Order",
-              cell: (o) => (
-                <Link href={`/admin/orders/${o.id}`} className="font-heading text-sm text-white hover:text-primary-2">
-                  {o.number}
-                  {o.reconciliationRequired ? <span className="ml-2 rounded bg-danger/30 px-1.5 text-[10px] text-danger">RECONCILE</span> : null}
-                </Link>
-              ),
-            },
-            { header: "Date", cell: (o) => formatDateTime(o.createdAt) },
-            { header: "Customer", cell: (o) => <span>{o.customerName}<span className="block text-xs text-gray">{o.customerEmail}</span></span> },
-            { header: "Status", cell: (o) => <OrderStatusPill status={o.status} /> },
-            { header: "Payment", cell: (o) => `${o.paymentMethod} · ${o.paymentStatus}` },
-            { header: "Total", cell: (o) => formatAmd(o.total) },
-          ]}
+          columns={columns}
+          caption="Orders"
+          onPage={(page) => update({ page })}
+          empty={isFiltered ? "No orders match these filters." : "No orders yet."}
+          emptyBody={isFiltered ? "Try another status, or search by order number, customer email or surname." : "New orders appear here as soon as a customer checks out."}
+          emptyAction={isFiltered ? <Button onClick={reset}>Clear filters</Button> : undefined}
         />
       </Panel>
     </>
@@ -95,9 +150,10 @@ function OrderDetail({ id }: { id: string }) {
     onSuccess: (data) => {
       client.setQueryData(["admin", "order", id], data);
       void client.invalidateQueries({ queryKey: ["admin", "orders"] });
+      void client.invalidateQueries({ queryKey: ["admin", "dashboard"] });
       setTarget(null);
       setNote("");
-      toast.success(`Order moved to ${data.status.replace(/_/g, " ")}.`);
+      toast.success(`Order moved to ${orderStatusLabel(data.status)}.`);
     },
     onError: (err) => {
       setTarget(null);
@@ -106,119 +162,239 @@ function OrderDetail({ id }: { id: string }) {
     },
   });
 
-  if (order.isPending) return <div className="skeleton h-[520px]" aria-busy="true" />;
-  if (order.isError) return <AdminError error={order.error} onRetry={() => order.refetch()} retrying={order.isFetching} />;
+  if (order.isPending) {
+    return (
+      <>
+        <div className="adm-skeleton mb-4 h-7 w-64" aria-busy="true" />
+        <div className="adm-grid lg:grid-cols-3">
+          <div className="adm-skeleton h-[420px] lg:col-span-2" />
+          <div className="adm-skeleton h-[420px]" />
+        </div>
+      </>
+    );
+  }
+  if (order.isError || !order.data) {
+    return (
+      <div className="adm-stack">
+        <Link href="/admin/orders" className="adm-linkbtn">
+          <ArrowLeft aria-hidden /> Back to orders
+        </Link>
+        <AdminError error={order.error} onRetry={() => order.refetch()} retrying={order.isFetching} />
+      </div>
+    );
+  }
   const o = order.data;
 
   return (
     <>
-      <PageTitle actions={<Link href="/admin/orders" className="cus-btn is-sm">Back to orders</Link>}>Order {o.number}</PageTitle>
-      <div className="space-y-6" data-testid="admin-order-detail">
+      <PageTitle
+        description={`Placed ${formatDateTime(o.createdAt)} · ${o.itemCount} item${o.itemCount === 1 ? "" : "s"} · ${formatAmd(o.total)}`}
+        actions={
+          <Link href="/admin/orders" className="adm-btn">
+            <ArrowLeft aria-hidden /> Back to orders
+          </Link>
+        }
+      >
+        <span className="adm-mono">Order {o.number}</span>
+      </PageTitle>
+
+      <div className="adm-stack" data-testid="admin-order-detail">
         {o.reconciliation.required ? (
-          <p className="form-alert is-error" role="alert">
-            Reconciliation required: {o.reconciliation.reason ?? "unknown reason"}. Do not fulfil until payment and stock are reconciled (refund if needed).
-          </p>
-        ) : null}
-        <Panel title="Status">
-          <div className="mb-16 flex flex-wrap items-center gap-3">
-            <OrderStatusPill status={o.status} />
-            <span className="text-sm">
-              Payment: {o.paymentMethod} · {o.paymentStatus}
+          <div className="adm-alert is-error" role="alert">
+            <ShieldAlert aria-hidden />
+            <span>
+              <strong>Reconciliation required.</strong> {o.reconciliation.reason ?? "Payment and stock disagree."} Do not fulfil until this is settled — refund
+              through the payment provider if the money never arrived.
             </span>
           </div>
-          {o.allowedTransitions.length ? (
-            <div className="space-y-3">
-              <TextInput label="Note for the timeline (optional)" value={note} onChange={setNote} />
-              <div className="flex flex-wrap gap-2" data-testid="order-transitions">
-                {o.allowedTransitions.map((to) => (
-                  <button
-                    key={to}
-                    type="button"
-                    className={`cus-btn is-sm ${SENSITIVE.includes(to) ? "is-danger" : ""}`}
-                    onClick={() => setTarget(to)}
-                    disabled={transition.isPending}
-                    data-testid={`transition-${to}`}
-                  >
-                    Mark {to.replace(/_/g, " ")}
-                  </button>
-                ))}
+        ) : null}
+
+        <div className="adm-grid lg:grid-cols-3">
+          <div className="adm-stack lg:col-span-2">
+            <Panel title="Items" subtitle={`${o.items.length} line${o.items.length === 1 ? "" : "s"}`} flush>
+              <div className="adm-tablewrap">
+                <table className="adm-table">
+                  <caption className="sr-only">Ordered items</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col" className="hidden sm:table-cell">
+                        SKU
+                      </th>
+                      <th scope="col" className="is-num">
+                        Qty
+                      </th>
+                      <th scope="col" className="is-num">
+                        Line total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {o.items.map((item) => (
+                      <tr key={item.sku}>
+                        <td>
+                          <span className="adm-rowactions">
+                            {/* eslint-disable-next-line @next/next/no-img-element -- order line thumbnail from the media CDN */}
+                            {item.image ? <img src={item.image.url} alt="" className="adm-thumb" width={44} height={44} /> : null}
+                            <span>
+                              <span className="adm-cell-strong">{item.name}</span>
+                              <span className="adm-cell-sub">{item.variantLabel}</span>
+                            </span>
+                          </span>
+                        </td>
+                        <td className="adm-mono hidden sm:table-cell">{item.sku}</td>
+                        <td className="is-num">{item.quantity}</td>
+                        <td className="is-num adm-cell-strong">{formatAmd(item.lineTotal)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <p className="text-xs">Only transitions permitted by the order state machine are offered; the server re-validates every change.</p>
-            </div>
-          ) : (
-            <p className="text-sm">This order is in a final state.</p>
-          )}
-        </Panel>
-        <div className="grid gap-6 xl:grid-cols-2">
-          <Panel title="Items">
-            <ul className="divide-y divide-white/10">
-              {o.items.map((item) => (
-                <li key={item.sku} className="flex justify-between gap-3 py-2 text-sm">
-                  <span>
-                    <span className="text-white">{item.name}</span> · {item.variantLabel} · <span className="font-mono">{item.sku}</span> × {item.quantity}
-                  </span>
-                  <span>{formatAmd(item.lineTotal)}</span>
-                </li>
-              ))}
-            </ul>
-            <dl className="mt-4 space-y-1 text-sm">
-              <div className="summary-row"><dt>Subtotal</dt><dd>{formatAmd(o.totals.subtotal)}</dd></div>
-              <div className="summary-row"><dt>Discount</dt><dd>−{formatAmd(o.totals.discount)}</dd></div>
-              <div className="summary-row"><dt>Shipping</dt><dd>{formatAmd(o.totals.shipping)}</dd></div>
-              <div className="summary-row font-bold"><dt>Total</dt><dd>{formatAmd(o.totals.total)}</dd></div>
-              <div className="summary-row !text-gray"><dt>VAT {o.totals.vatRatePercent}% included</dt><dd>{formatAmd(o.totals.vatAmount)}</dd></div>
-            </dl>
-          </Panel>
-          <Panel title="Customer & delivery">
-            <p className="text-sm leading-relaxed">
-              <span className="text-white">{o.customer.firstName} {o.customer.lastName}</span>
-              <br />
-              {o.customer.email} · {o.customer.phone}
-              <br />
-              {o.shipping.line1} {o.shipping.line2}
-              <br />
-              {o.shipping.city}, {o.shipping.region}
-              {o.shipping.notes ? (
-                <>
-                  <br />
-                  Notes: {o.shipping.notes}
-                </>
+              <dl className="adm-totals p-4 sm:p-5">
+                <div>
+                  <dt>Subtotal</dt>
+                  <dd>{formatAmd(o.totals.subtotal)}</dd>
+                </div>
+                <div>
+                  <dt>Discount</dt>
+                  <dd>−{formatAmd(o.totals.discount)}</dd>
+                </div>
+                <div>
+                  <dt>Shipping</dt>
+                  <dd>{formatAmd(o.totals.shipping)}</dd>
+                </div>
+                <div className="is-total">
+                  <dt>Total</dt>
+                  <dd>{formatAmd(o.totals.total)}</dd>
+                </div>
+                <div className="is-muted">
+                  <dt>VAT {o.totals.vatRatePercent}% included</dt>
+                  <dd>{formatAmd(o.totals.vatAmount)}</dd>
+                </div>
+              </dl>
+            </Panel>
+
+            <Panel title="Payments">
+              {o.payments.length === 0 ? (
+                <p className="adm-hint">No payment records. Cash-on-delivery orders are settled when the courier collects.</p>
+              ) : (
+                <ul className="adm-list" style={{ margin: "calc(-1 * var(--adm-sp-5))" }}>
+                  {o.payments.map((p) => (
+                    <li className="adm-list-item" key={p.id}>
+                      <span className="adm-list-item-main">
+                        <span className="adm-cell-strong">{p.provider}</span>
+                        <span className="adm-cell-sub adm-mono">{p.providerRef ?? "no provider reference"}</span>
+                      </span>
+                      <StatusPill tone={PAYMENT_TONE[p.status] ?? "neutral"}>{p.status.replace(/_/g, " ")}</StatusPill>
+                      <span className="adm-money">{formatAmd(p.amount)}</span>
+                      <span className="adm-cell-sub">{formatDateTime(p.createdAt)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
+
+          <div className="adm-stack">
+            <Panel title="Status">
+              <div className="adm-rowactions" style={{ gap: "var(--adm-sp-2)", marginBottom: "var(--adm-sp-3)" }}>
+                <OrderStatusPill status={o.status} />
+                <StatusPill tone={PAYMENT_TONE[o.paymentStatus] ?? "neutral"}>payment: {o.paymentStatus.replace(/_/g, " ")}</StatusPill>
+              </div>
+              {o.reservationExpiresAt ? (
+                <p className="adm-hint" style={{ marginBottom: "var(--adm-sp-3)" }}>
+                  <Clock aria-hidden width={13} height={13} style={{ display: "inline", verticalAlign: "-2px" }} /> Reserved stock expires {formatDateTime(o.reservationExpiresAt)}.
+                </p>
               ) : null}
-            </p>
-          </Panel>
-          <Panel title="Payments">
-            {o.payments.length === 0 ? (
-              <p className="text-sm">No payment records.</p>
-            ) : (
-              <ul className="space-y-1 text-sm">
-                {o.payments.map((p) => (
-                  <li key={p.id}>
-                    {p.provider} · {p.status} · {formatAmd(p.amount)} · {p.providerRef ?? "no ref"} · {formatDateTime(p.createdAt)}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
-          <Panel title="Timeline">
-            <ol className="space-y-2 border-l border-primary/50 pl-4 text-sm">
-              {o.timeline.map((t, i) => (
-                <li key={i}>
-                  <span className="text-white">{t.status.replace(/_/g, " ")}</span> · {formatDateTime(t.at)}
-                  {t.note ? <span className="block">{t.note}</span> : null}
-                </li>
-              ))}
-            </ol>
-          </Panel>
+              {o.allowedTransitions.length ? (
+                <div className="adm-stack">
+                  <TextInput label="Note for the timeline" value={note} onChange={setNote} placeholder="Optional — visible to other admins" testId="order-note" />
+                  <div className="adm-grid" style={{ gap: "var(--adm-sp-2)" }} data-testid="order-transitions">
+                    {o.allowedTransitions.map((to) => (
+                      <Button
+                        key={to}
+                        variant={SENSITIVE.includes(to) ? "danger" : to === "paid" || to === "delivered" ? "primary" : "default"}
+                        className="is-block"
+                        onClick={() => setTarget(to)}
+                        disabled={transition.isPending}
+                        data-testid={`transition-${to}`}
+                      >
+                        Mark {orderStatusLabel(to)}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="adm-hint">Only transitions permitted by the order state machine are offered; the server re-validates every change.</p>
+                </div>
+              ) : (
+                <p className="adm-hint">This order is in a final state — no further transitions are allowed.</p>
+              )}
+            </Panel>
+
+            <Panel title="Customer & delivery">
+              <dl className="adm-kv">
+                <dt>Name</dt>
+                <dd>
+                  {o.customer.firstName} {o.customer.lastName}
+                </dd>
+                <dt>Email</dt>
+                <dd>
+                  <a href={`mailto:${o.customer.email}`} className="adm-linkbtn is-muted">
+                    <Mail aria-hidden width={13} height={13} /> {o.customer.email}
+                  </a>
+                </dd>
+                <dt>Phone</dt>
+                <dd>
+                  <a href={`tel:${o.customer.phone.replace(/\s/g, "")}`} className="adm-linkbtn is-muted">
+                    <Phone aria-hidden width={13} height={13} /> {o.customer.phone}
+                  </a>
+                </dd>
+                <dt>Address</dt>
+                <dd>
+                  <MapPin aria-hidden width={13} height={13} style={{ display: "inline", verticalAlign: "-2px" }} /> {o.shipping.line1}
+                  {o.shipping.line2 ? `, ${o.shipping.line2}` : ""}
+                  <br />
+                  {o.shipping.city}, {o.shipping.region}
+                </dd>
+                {o.shipping.notes ? (
+                  <>
+                    <dt>Notes</dt>
+                    <dd>{o.shipping.notes}</dd>
+                  </>
+                ) : null}
+              </dl>
+            </Panel>
+
+            <Panel title="Timeline" subtitle="Every status change, newest last">
+              {o.timeline.length === 0 ? (
+                <p className="adm-hint">No status changes recorded yet.</p>
+              ) : (
+                <ol className="adm-timeline">
+                  {o.timeline.map((t, i) => (
+                    <li key={`${t.status}-${t.at}-${i}`} className={i === o.timeline.length - 1 ? undefined : "is-muted"}>
+                      <span className="adm-cell-strong">{orderStatusLabel(t.status)}</span>
+                      <span className="adm-cell-sub">{formatDateTime(t.at)}</span>
+                      {t.note ? (
+                        <span className="adm-cell-sub" style={{ whiteSpace: "pre-wrap" }}>
+                          {t.note}
+                        </span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </Panel>
+          </div>
         </div>
       </div>
-      <ConfirmDialog
+
+      <AdminConfirm
         open={target !== null}
-        title={`Move order to “${target?.replace(/_/g, " ")}”?`}
+        title={`Move order ${o.number} to “${target ? orderStatusLabel(target) : ""}”?`}
         body={
           target && SENSITIVE.includes(target) ? (
-            <p>This is a sensitive action. Reserved stock is restored exactly once; refunds must also be completed with the payment provider.</p>
+            <p className="adm-hint">This is a sensitive action. Reserved stock is restored exactly once; refunds must also be completed with the payment provider.</p>
           ) : (
-            <p>The customer will be notified by email where applicable.</p>
+            <p className="adm-hint">The customer will be notified by email where applicable.</p>
           )
         }
         danger={target !== null && SENSITIVE.includes(target)}
